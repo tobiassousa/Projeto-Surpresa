@@ -11,15 +11,24 @@
     integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+    rel="stylesheet">
+
+
+  <link rel="icon" type="image/png" sizes="96x96" href="{% static 'favicon.ico/favicon-96x96.png' %}">
+  <link rel="icon" type="image/svg+xml" href="{% static 'favicon.ico/favicon.svg' %}">
+  <link rel="shortcut icon" href="{% static 'favicon.ico/favicon.ico' %}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon.ico/apple-touch-icon.png' %}">
+  <link rel="manifest" href="{% static 'favicon.ico/site.webmanifest' %}">
 
 
 </head>
 
 <body>
-  <h1><img src="{% static 'imagens/logo_remake.png' %}" style="height: 50px;"> Lista de Convidados do Casamento Nicolly e Tobias      <img src="{% static 'imagens/logo_remake.png' %}" style="height: 50px;"></h1>
-  
-  <div  class="container">
+  <h1><img src="{% static 'imagens/logo_remake.png' %}" style="height: 50px;"> Lista de Convidados do Casamento Nicolly
+    e Tobias <img src="{% static 'imagens/logo_remake.png' %}" style="height: 50px;"></h1>
+
+  <div class="container">
     <br><br>
     <form action="{% url 'criar_convidado' %}" method="POST"> {% csrf_token %}
       <label for="" class="titulo-cadastro">Nome:</label>
@@ -29,12 +38,14 @@
       <div class="row">
         <div class="col-md-6">
           <label for="" class="titulo-cadastro">Relação:</label>
-          <input type="text" name="relacao" class="form-control input-relacao" placeholder="Digite se o Convidado é do Noivo ou da Noiva">
+          <input type="text" name="relacao" class="form-control input-relacao"
+            placeholder="Digite se o Convidado é do Noivo ou da Noiva">
         </div>
-        
+
         <div class="col-md-6">
           <label for="" class="titulo-cadastro">Confirmado:</label>
-          <input type="text" name="confirmado" class="form-control input-confirmado" placeholder="Digite se a pessoa está confirmada ou não">
+          <input type="text" name="confirmado" class="form-control input-confirmado"
+            placeholder="Digite se a pessoa está confirmada ou não">
         </div>
       </div>
       <br>
@@ -43,7 +54,7 @@
     </form>
 
     <hr>
-    
+
     <table class="table tabela-fundo">
       <thead>
         <tr>
@@ -55,22 +66,23 @@
       </thead>
       <tbody>
         {% for i in lista %}
-            <tr>
-              <td>
-                <form action="{% url 'atualizar_convidado' i.id %}" method="POST">{% csrf_token %}
-                  <input type="text" name="nome" value="{{i.nome}}" class="form-control">
-              </td>
-              <td>
-                  <input type="text" name="relacao" value="{{i.relacao}}" class="form-control">
-              </td>
-              <td>
-                  <input type="text" name="confirmado" value="{{i.confirmado}}" class="form-control"></td>
-              <td>
-                <input type="submit" value="Atualizar" class="btn btn-primary">
-                </form>
-                <a href="{% url 'deletar_convidado' i.id %}" class="btn btn-danger">Deletar</a>
-              </td>
-            </tr>
+        <tr>
+          <td>
+            <form action="{% url 'atualizar_convidado' i.id %}" method="POST">{% csrf_token %}
+              <input type="text" name="nome" value="{{i.nome}}" class="form-control">
+          </td>
+          <td>
+            <input type="text" name="relacao" value="{{i.relacao}}" class="form-control">
+          </td>
+          <td>
+            <input type="text" name="confirmado" value="{{i.confirmado}}" class="form-control">
+          </td>
+          <td>
+            <input type="submit" value="Atualizar" class="btn btn-primary">
+            </form>
+            <a href="{% url 'deletar_convidado' i.id %}" class="btn btn-danger">Deletar</a>
+          </td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>
