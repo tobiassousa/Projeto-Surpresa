@@ -1,0 +1,26 @@
+body {
+    background-color: #ffe4ec;
+    background-image: url("imagens/WhatsApp Image 2026-02-15 at 18.30.38.jpeg");
+    background-repeat: repeat;
+    background-position: center center;
+    background-attachment: fixed; /* deixa fixo ao rolar */
+}
+
+h1 {
+    text-align: center;
+    background-color: #FAF6C0;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    font-family: Playfair Display;
+}
+
+.input-relacao {
+    width: 500px !important;
+}
+.input-confirmado {
+    width: 500px !important;
+}
+.titulo-cadastro{
+    font-weight: bold;
+}
