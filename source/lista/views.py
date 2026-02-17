@@ -5,13 +5,18 @@ from .models import Lista
 
 def criar_convidado(request):
     if request.method == 'GET':
+        busca = request.GET.get('q')
+
         lista = Lista.objects.all()
+
+        if busca:
+            lista = lista.filter(nome__icontains=busca)
         
         total = Lista.objects.count()
         total_sim = Lista.objects.filter(confirmado="Sim").count()
         total_nao = Lista.objects.filter(confirmado="Não").count()
-        total_menor = Lista.objects.filter(idade_menor="Sim").count()
-        total_maior = Lista.objects.filter(idade_maio="Sim").count()
+        total_menor = Lista.objects.filter(confirmado="Sim",idade_menor="Sim").count()
+        total_maior = Lista.objects.filter(confirmado="Sim",idade_maio="Sim").count()
 
         context = {
             "lista": lista,
