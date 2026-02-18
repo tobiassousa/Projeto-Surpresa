@@ -24,3 +24,6 @@ h1 {
 .titulo-cadastro{
     font-weight: bold;
 }
+.input-campos{
+    width: 500px !important;
+}
