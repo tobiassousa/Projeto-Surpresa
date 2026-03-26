@@ -7,6 +7,8 @@ class Lista(models.Model):
     confirmado = models.CharField()
     idade_menor = models.CharField(null=True, blank=True)
     idade_maio = models.CharField(null=True, blank=True)
+    contato = models.CharField()
+    expiradate = models.DateTimeField(null=True, blank=True)
     
     def __str__(self):
         return self.nome    

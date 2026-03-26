@@ -75,6 +75,11 @@
             </select>
           </div>
 
+          <div class="mb-3">
+            <label>Contato</label>
+            <input type="text" name="contato" id="modalContato" class="form-control">
+          </div>
+
           <button type="submit" class="btn btn-success">
             Salvar Alterações
           </button>
@@ -186,6 +191,10 @@
             <option value="Não">Não</option>
           </select>
         </div>
+        <div class="col-md-6">
+          <label for="" class="titulo-cadastro">Contato:</label>
+          <input type="text" name="contato" class="form-control" placeholder="Digite um contato">
+        </div>
 
       </div>
       <br>
@@ -194,12 +203,15 @@
     </form>
 
     <hr>
-
-    <input type="text" 
-       id="campoBusca" 
-       class="form-control mb-3" 
-       placeholder="Pesquisar convidado...">
-
+    <div class="row">
+      <div class="col-md-6">
+        <input type="text" 
+          id="campoBusca" 
+          class="form-control mb-3" 
+          placeholder="Pesquisar convidado...">
+      </div>
+      
+    </div>
 
 
     <div class="card shadow-sm border-0">
@@ -208,27 +220,31 @@
           <table class="table table-hover align-middle mb-0">
             <thead>
               <tr>
-                <th scope="col">Nome</th>
-                <th scope="col">Relação (Noivo ou Noiva)</th>
+                <th> </th>
+                <th onclick="ordenarTabela()">Nome <span id="iconeOrdenacao">⬍</span></th>
+                <th onclick="ordenarTabela_relacao()">Relação<span id="iconeOrdenacao_relacao">⬍</span></th>
                 <th scope="col">Confirmado</th>
                 <th scope="col">Idade Menor que 6 anos</th>
                 <th scope="col">Idade Maior que 18 anos</th>
+                <th scope="col">Contato</th>
                 <th scope="col">Edição</th>
               </tr>
             </thead>
             <tbody>
               {% for i in lista %}
-              <tr>
+              <tr data-id="{{ i.id }}">
+                <td><input type="checkbox" name="ids" value="{{ i.id }}" class="checkbox-item"></td>
                 <td>{{ i.nome }}</td>
                 <td>{{ i.relacao }}</td>
                 <td>{{ i.confirmado }}</td>
                 <td>{{ i.idade_menor }}</td>
                 <td>{{ i.idade_maio }}</td>
+                <td>{{ i.contato }}</td>
                 <td>
                   <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalEditar"
                     data-url="{% url 'atualizar_convidado' i.id %}" data-nome="{{ i.nome }}"
                     data-relacao="{{ i.relacao }}" data-confirmado="{{ i.confirmado }}"
-                    data-idade_menor="{{ i.idade_menor }}" data-idade_maio="{{ i.idade_maio }}">
+                    data-idade_menor="{{ i.idade_menor }}" data-idade_maio="{{ i.idade_maio }}" data-contato="{{i.contato}}">
                     Atualizar
                   </button>
 
@@ -252,13 +268,20 @@
     integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
     crossorigin="anonymous"></script>
 
-    <script>
+<script>
+function removerAcentos(texto) {
+    return texto
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+}
+
 document.getElementById("campoBusca").addEventListener("keyup", function() {
-    let filtro = this.value.toLowerCase();
+    let filtro = removerAcentos(this.value.toLowerCase());
     let linhas = document.querySelectorAll("tbody tr");
 
     linhas.forEach(function(linha) {
-        let nome = linha.cells[0].textContent.toLowerCase();
+        let nome = linha.cells[1].textContent.toLowerCase();
+        nome = removerAcentos(nome);
 
         if (nome.includes(filtro)) {
             linha.style.display = "";
@@ -269,36 +292,179 @@ document.getElementById("campoBusca").addEventListener("keyup", function() {
 });
 </script>
 
+<script>
+window.addEventListener("beforeunload", function () {
+    localStorage.setItem("scrollY", window.scrollY);
+});
+</script>
+
 </body>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// 🔎 BUSCA SEM ACENTO
+function removerAcentos(texto) {
+    return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+document.getElementById("campoBusca").addEventListener("keyup", function() {
+    let filtro = removerAcentos(this.value.toLowerCase());
+    let linhas = document.querySelectorAll("tbody tr");
+
+    linhas.forEach(function(linha) {
+        let textoLinha = removerAcentos(linha.textContent.toLowerCase());
+
+        linha.style.display = textoLinha.includes(filtro) ? "" : "none";
+    });
+});
+</script>
+
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
+// 🔽 ORDENAÇÃO POR NOME
+let estadoOrdenacao = 0;
 
+function ordenarTabela() {
+    let tbody = document.querySelector("tbody");
+    let linhas = Array.from(tbody.rows);
+
+    let iconeNome = document.getElementById("iconeOrdenacao");
+    let iconeRelacao = document.getElementById("iconeOrdenacao_relacao");
+
+    estadoOrdenacao = (estadoOrdenacao + 1) % 3;
+
+    // Reset outro ícone
+    iconeRelacao.textContent = "⬍";
+
+    if (estadoOrdenacao === 1) {
+        linhas.sort((a, b) =>
+            a.cells[1].textContent.toLowerCase()
+            .localeCompare(b.cells[1].textContent.toLowerCase())
+        );
+        iconeNome.textContent = "↑";
+
+    } else if (estadoOrdenacao === 2) {
+        linhas.sort((a, b) =>
+            b.cells[1].textContent.toLowerCase()
+            .localeCompare(a.cells[1].textContent.toLowerCase())
+        );
+        iconeNome.textContent = "↓";
+
+    } else {
+        linhas.sort((a, b) =>
+            Number(a.dataset.id) - Number(b.dataset.id)
+        );
+        iconeNome.textContent = "⬍";
+    }
+
+    linhas.forEach(linha => tbody.appendChild(linha));
+}
+</script>
+
+
+<script>
+// 🔽 ORDENAÇÃO POR RELAÇÃO
+let estadoOrdenacao_relacao = 0;
+
+function ordenarTabela_relacao() {
+    let tbody = document.querySelector("tbody");
+    let linhas = Array.from(tbody.rows);
+
+    let iconeNome = document.getElementById("iconeOrdenacao");
+    let iconeRelacao = document.getElementById("iconeOrdenacao_relacao");
+
+    estadoOrdenacao_relacao = (estadoOrdenacao_relacao + 1) % 3;
+
+    // Reset outro ícone
+    iconeNome.textContent = "⬍";
+
+    if (estadoOrdenacao_relacao === 1) {
+        linhas.sort((a, b) =>
+            a.cells[2].textContent.toLowerCase()
+            .localeCompare(b.cells[2].textContent.toLowerCase())
+        );
+        iconeRelacao.textContent = "↑";
+
+    } else if (estadoOrdenacao_relacao === 2) {
+        linhas.sort((a, b) =>
+            b.cells[2].textContent.toLowerCase()
+            .localeCompare(a.cells[2].textContent.toLowerCase())
+        );
+        iconeRelacao.textContent = "↓";
+
+    } else {
+        linhas.sort((a, b) =>
+            Number(a.dataset.id) - Number(b.dataset.id)
+        );
+        iconeRelacao.textContent = "⬍";
+    }
+
+    linhas.forEach(linha => tbody.appendChild(linha));
+}
+</script>
+
+
+<script>
+// 📱 MÁSCARA TELEFONE
+function aplicarMascaraTelefone(input) {
+    input.addEventListener("input", function (e) {
+        let valor = e.target.value.replace(/\D/g, "");
+
+        if (valor.length > 11) valor = valor.slice(0, 11);
+
+        if (valor.length > 10) {
+            valor = valor.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+        } else if (valor.length > 6) {
+            valor = valor.replace(/^(\d{2})(\d{4})(\d{0,4})$/, "($1) $2-$3");
+        } else if (valor.length > 2) {
+            valor = valor.replace(/^(\d{2})(\d{0,5})$/, "($1) $2");
+        } else {
+            valor = valor.replace(/^(\d*)$/, "($1");
+        }
+
+        e.target.value = valor;
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll('input[name="contato"]').forEach(aplicarMascaraTelefone);
+});
+</script>
+
+
+<script>
+// ✏️ MODAL EDITAR
+document.addEventListener("DOMContentLoaded", function () {
     const modalEditar = document.getElementById('modalEditar');
 
     modalEditar.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
 
-      const button = event.relatedTarget;
+        document.getElementById('modalNome').value = button.dataset.nome;
+        document.getElementById('modalRelacao').value = button.dataset.relacao;
+        document.getElementById('modalConfirmado').value = button.dataset.confirmado;
+        document.getElementById('modalIdade_menor').value = button.dataset.idade_menor;
+        document.getElementById('modalIdade_maio').value = button.dataset.idade_maio;
+        document.getElementById('modalContato').value = button.dataset.contato;
 
-      const url = button.getAttribute('data-url');
-      const nome = button.getAttribute('data-nome');
-      const relacao = button.getAttribute('data-relacao');
-      const confirmado = button.getAttribute('data-confirmado');
-      const idade_menor = button.getAttribute('data-idade_menor');
-      const idade_maio = button.getAttribute('data-idade_maio');
-
-      document.getElementById('modalNome').value = nome;
-      document.getElementById('modalRelacao').value = relacao;
-      document.getElementById('modalConfirmado').value = confirmado;
-      document.getElementById('modalIdade_menor').value = idade_menor;
-      document.getElementById('modalIdade_maio').value = idade_maio;
-
-      document.getElementById('formEditar').action = url;
+        document.getElementById('formEditar').action = button.dataset.url;
     });
+});
+</script>
 
-  });
+
+<script>
+// 📍 SALVAR SCROLL
+window.addEventListener("beforeunload", function () {
+    localStorage.setItem("scrollY", window.scrollY);
+});
+
+// 📍 RESTAURAR SCROLL
+window.addEventListener("load", function () {
+    let scrollY = localStorage.getItem("scrollY");
+    if (scrollY !== null) {
+        window.scrollTo(0, parseInt(scrollY));
+    }
+});
 </script>
 
 
