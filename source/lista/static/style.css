@@ -27,3 +27,16 @@ h1 {
 .input-campos{
     width: 500px !important;
 }
+table {
+    width: 100%;
+}
+.form-control,
+.form-select {
+    border: 2px solid black !important;
+}
+.form-control:focus,
+.form-select:focus {
+    border: 2px solid black !important;
+    box-shadow: none !important;
+    outline: none;
+}
